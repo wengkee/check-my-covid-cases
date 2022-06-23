@@ -1,4 +1,4 @@
-# check-my-covid-cases
+# Check Malaysia Covid Cases
 This is a simple shell script (using curl) to check daily Covid active and death cases in Malaysia. The data is extracted from MoH Github repository, which is updated daily at midnight.
 
 ## Run
