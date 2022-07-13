@@ -14,13 +14,22 @@ fi
 
 if [[ "$MODE" == 'NOW' ]]; then
     echo "Instant mode.."
-    echo $SCRIPT 
+    echo $SCRIPT
     exec $SCRIPT $(exec /check-cases.sh)
     exit 0
 fi
 
 echo "Timezone is set to: $TZ"
-echo "Setting $SCRIPT to run at cron schedule: $CRON_SCHEDULE"
-echo "$CRON_SCHEDULE $SCRIPT" >> /var/spool/cron/crontabs/root
-crond -l 2 -f
 
+# avoid double setting crons in case of docker-compose restart
+CRON_FILE=/var/spool/cron/crontabs/root
+if grep -q $SCRIPT $CRON_FILE; then
+  echo "$SCRIPT already set in $CRON_FILE"
+else
+  echo "Setting $SCRIPT to run at cron schedule: $CRON_SCHEDULE"
+  echo "$CRON_SCHEDULE $SCRIPT" > $CRON_FILE
+fi
+
+# setting log level to 2, default was 8
+# setting crond to run at foreground
+crond -l 2 -f
